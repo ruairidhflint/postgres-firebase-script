@@ -1,11 +1,17 @@
+// Library Imports
 const fetch = require('node-fetch');
 const fb = require('firebase');
+
+// Firebase setup ( import config settings, initialize app and intialize access to database )
 const config = require('./fbConfig');
 fb.initializeApp(config);
 const db = fb.firestore();
 
+// Original URL of Postgres/Node deployed URL
 const deployedRESTURL = 'https://threesixsixquotes.herokuapp.com/quotes';
 
+// Function to fetch all quotes from original node/postgres database and then loop through
+// each quote and post to the new Firebase database
 async function fetchAndUploadQuotes() {
   fetch(deployedRESTURL)
     .then((res) => res.json())
@@ -36,6 +42,8 @@ function postToFirebase(quote) {
 
 // fetchAndUploadQuotes();
 
+// Function to retrieve all quotes from firebase database and check length to ensure
+// all quotes were retrieved and successfully posted to Firebase
 function checkAllQuotesExist() {
   db.collection('quotes')
     .get()
@@ -44,17 +52,4 @@ function checkAllQuotesExist() {
     });
 }
 
-// checkQuotes();
-
-function retrieveSingleQuote(day) {
-  db.collection('quotes')
-    .where('dayOfYear', '==', day)
-    .get()
-    .then((snapshot) => {
-      snapshot.docs.forEach((doc) => {
-        console.log(doc.data());
-      });
-    });
-}
-
-// retrieveSingleQuote(10);
+// checkAllQuotesExist();
